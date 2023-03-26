@@ -1,0 +1,11 @@
+# restart adbd server if udc change uevent happen...
+DEVPATH=="/devices/platform/soc/b2000000.usb/b2000000.dwc3/udc/b2000000.dwc3", ACTION=="add", RUN+="/usr/bin/adb_hotplug.sh"
+
+# <<< @This is deprecated udev rules >>>
+# this is temp solution for adbd hot plug issue.
+# original adb source code >> http://gitlab.hobot.cc/ptd/ss/x2-linux/external/android-tools/tree/develop/adb
+# now use http://gitlab.hobot.cc/ptd/ss/x2-linux/external/android-tools/tree/develop/lagency
+# it is integrated from ubuntu source repo, which is similar as openembedded project.
+# and it fix the adbd hotplug & miss UDC issue.
+# you can compare the usb_close & usb_ffs_close function in usb_linux_client.c
+# Yes, don't close ep0 for the adb gadget. Otherwise, it will close/release gadget driver.

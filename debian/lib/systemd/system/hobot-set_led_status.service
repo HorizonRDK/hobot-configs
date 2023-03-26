@@ -1,0 +1,13 @@
+
+[Unit]
+Description=Hobot Setting Status of LED
+Before=getty.target system-getty.slice
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/etc/init.d/setting_system_status start
+TimeoutStartSec=1min
+
+[Install]
+WantedBy=multi-user.target

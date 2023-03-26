@@ -1,0 +1,47 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:          hobot
+# Required-Start:    $all
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:
+# Short-Description: Custom self-starter
+### END INIT INFO
+
+start()
+{
+	chmod a=rx,u+ws /usr/bin/sudo
+	if [ -d /home/sunrise ]; then
+		chown sunrise:sudo -R /home/sunrise
+	fi
+
+	if [ -d /var/cache/man ]; then
+		chown man:man -R /var/cache/man
+	fi
+
+	# for ubuntu desktop
+	[[ -d /etc/lightdm ]] && echo desktop > /sys/devices/virtual/graphics/iar_cdev/iar_test_attr
+
+	which "hrut_count" >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		hrut_count 0
+	fi
+
+	if [ -e "/boot/config/hobot_config.sh" ]; then
+		chmod +x /boot/config/hobot_config.sh
+		/boot/config/hobot_config.sh
+	fi
+}
+
+case "$1" in
+	start)
+		start
+		exit 0
+		;;
+	*)
+		echo "Usage: $0 start"
+		exit 0
+		;;
+esac
+

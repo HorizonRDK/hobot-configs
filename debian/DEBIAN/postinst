@@ -1,0 +1,33 @@
+#!/bin/bash
+
+update-rc.d usbsel defaults
+update-rc.d hobot-rc defaults
+
+systemctl --no-reload enable hobot-rc.service
+systemctl --no-reload enable usbsel.service
+systemctl --no-reload enable hobot-resizefs.service
+systemctl --no-reload enable hobot-firstrun.service
+systemctl --no-reload enable hobot-set_led_status
+systemctl --no-reload enable serial-getty@ttyS0.service
+
+if [ ! -f /etc/rc.local ]; then
+	cp /etc/rc.local.default /etc/rc.local
+fi
+
+
+chmod 777 /etc/set_mac_address.sh
+mkdir -p /home/root
+
+cp -arf /etc/skel/.config/. /home/root/.config
+cp -arf /etc/skel/.config/. /home/sunrise/.config
+
+
+# Configure hobot ubuntu desktop
+# Debian Buster desktop bugfix https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=923289
+[[ -d /etc/lightdm ]] && dpkg-reconfigure libgdk-pixbuf2.0-0 && update-mime-database /usr/share/mime
+
+[[ -d /etc/lightdm ]] && dpkg-reconfigure lightdm && systemctl restart lightdm
+
+[[ -d /etc/.vnc ]] && systemctl daemon-reload && systemctl --no-reload enable x11vnc.service
+
+exit 0

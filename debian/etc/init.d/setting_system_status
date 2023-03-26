@@ -1,0 +1,33 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:          hobot
+# Required-Start:    $all
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:
+# Short-Description: Some configurations when the system starts for the first time
+### END INIT INFO
+
+start()
+{
+  som_name=$(cat /sys/class/socinfo/som_name)
+  if [ ${som_name} == '5' ] || [ ${som_name} == '6' ];then
+    # Setting status of led
+    echo 26 > /sys/class/gpio/export
+    echo out > /sys/class/gpio/gpio26/direction
+    echo 0 > /sys/class/gpio/gpio26/value
+    echo 26 > /sys/class/gpio/unexport
+  fi
+}
+
+case "$1" in
+  start)
+        start
+        exit 0
+    ;;
+    *)
+    echo "Usage: $0 start"
+    exit 0
+  ;;
+esac

@@ -1,0 +1,16 @@
+SUBSYSTEM=="gpio", ACTION=="add", \
+	RUN+="/bin/bash -c 'chgrp -R $env{SUBSYSTEM} %N %S/$env{DEVPATH} %S/class/gpio;chmod 755 %N %S/$env{DEVPATH} %S/class/gpio'"
+SUBSYSTEM=="vps", ACTION=="add", \
+	RUN+="/bin/bash -c 'chgrp -R $env{SUBSYSTEM} %N %S/$env{DEVPATH} %S/class/vps;chmod 660 -R %N %S/$env{DEVPATH} %S/class/vps'"
+SUBSYSTEM=="ipu", ACTION=="add", \
+	RUN+="/bin/bash -c 'chgrp -R $env{SUBSYSTEM} %N %S/$env{DEVPATH} ;chmod 660 %N %S/$env{DEVPATH}'"
+SUBSYSTEM=="misc", ACTION=="add", \
+	RUN+="/bin/bash -c 'chgrp -R $env{SUBSYSTEM} %N %S/$env{DEVPATH} %S/class/misc;chmod 660 -R %N %S/$env{DEVPATH} %S/class/misc'"
+SUBSYSTEM=="jpu", ACTION=="add", \
+	RUN+="/bin/bash -c 'chgrp -R $env{SUBSYSTEM} %N %S/$env{DEVPATH} %S/class/jpu;chmod 660 -R %N %S/$env{DEVPATH} %S/class/jpu'"
+SUBSYSTEM=="graphics", ACTION=="add", \
+	RUN+="/bin/bash -c 'chgrp -R $env{SUBSYSTEM} %N %S/$env{DEVPATH} %S/class/graphics;chmod 660 -R %N %S/$env{DEVPATH} %S/class/graphics'"
+SUBSYSTEM=="vpu", ACTION=="add", \
+	RUN+="/bin/bash -c 'chgrp -R $env{SUBSYSTEM} %N %S/$env{DEVPATH} %S/class/vpu;chmod 660 -R %N %S/$env{DEVPATH} %S/class/vpu'"
+SUBSYSTEM=="vpu_clk_dev", ACTION=="add", \
+	RUN+="/bin/bash -c 'chgrp -R vpu %N %S/$env{DEVPATH} %S/class/vpu_clk_dev;chmod 660 -R %N %S/$env{DEVPATH} %S/class/vpu_clk_dev'"

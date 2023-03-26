@@ -1,0 +1,116 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:          hobot
+# Required-Start:    $all
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:
+# Short-Description: Resize Root Filesystem
+### END INIT INFO
+
+do_resize_rootfs()
+{
+    local root_src=$(findmnt -n -o SOURCE / | sed 's~\[.*\]~~')
+
+    if [ ! -f /etc/.do_resizefs_rootfs ];then
+        echo "Start resize ${root_src}"
+        resize2fs ${root_src}
+        touch  /etc/.do_resizefs_rootfs
+    fi
+}
+
+do_resize_appfs()
+{
+    for num in {0..3}
+    do
+        local mmc_dev="/dev/mmcblk${num}"
+        if [ ! -z ${mmc_dev} ];then
+            local app_part=$(parted ${mmc_dev} print -sm | grep "app" |tail -1 | awk -F ':' '{print $1}')
+            if grep '^[[:digit:]]*$' <<< "${app_part}";then
+                break;
+            fi
+        fi
+    done
+    if ! grep '^[[:digit:]]*$' <<< "${app_part}";then
+        echo "No app partition found!"!
+        return 0
+    fi
+    local fs_type=$(lsblk -n -o FSTYPE "${mmc_dev}p${app_part}")
+    local usage=$(lsblk -n -o FSUSE% "${mmc_dev}p${app_part}")
+    usage=${usage%%%}
+    if [ ! -f /etc/.do_resizefs_app ];then
+        if [ x${fs_type} == x"ext4" ];then
+            if [ ${usage} -gt 90 ];then
+                echo "Start resize ${mmc_dev}p${app_part}"
+                resize2fs "${mmc_dev}p${app_part}"
+                touch /etc/.do_resizefs_app
+            fi
+        fi
+    fi
+}
+
+do_expand_partiton()
+{
+	if [ ! -f /etc/.do_expand_partiton ];then
+	    # local rootsource=$(findmnt -n -o SOURCE / | sed 's~\[.*\]~~')
+	    # local rootdevice=$(echo $rootsource | sed -e "s/^\/dev\///" | sed "s/p.*//")
+	    # local rootdevicepath="/dev/$rootdevice"
+	    # local partstart=$(parted $rootdevicepath unit s print -sm | tail -1 | cut -d: -f2 | sed 's/s//')
+	    # (echo d; echo n; echo p; echo ; echo ; echo ; echo w;) | fdisk $rootdevicepath
+        local ROOT_PART="$(findmnt / -o source -n)"
+        local ROOT_DEV="/dev/$(lsblk -no pkname "$ROOT_PART")"
+
+        local PART_NUM="$(echo "$ROOT_PART" | grep -o "[[:digit:]]*$")"
+
+        local LAST_PART_NUM=$(parted "$ROOT_DEV" -ms unit s p | tail -n 1 | cut -f 1 -d:)
+        if [ "$LAST_PART_NUM" -ne "$PART_NUM" ]; then
+            echo "$ROOT_PART is not the last partition. Don't know how to expand"
+            return 0
+        fi
+
+        # Get the starting offset of the root partition
+        local PART_START=$(parted "$ROOT_DEV" -ms unit s p | grep "^${PART_NUM}" | cut -f 2 -d: | sed 's/[^0-9]//g')
+        [ "$PART_START" ] || return 1
+        # Return value will likely be error for fdisk as it fails to reload the
+        # partition table because the root fs is mounted
+        fdisk "$ROOT_DEV" <<EOF
+p
+d
+$PART_NUM
+n
+p
+$PART_NUM
+$PART_START
+
+p
+w
+EOF
+        partprobe $rootdevicepath
+        parted "${ROOT_DEV}" set ${PART_NUM} boot on
+        touch /etc/.do_expand_partiton
+    fi
+}
+
+do_resize()
+{
+    local rootsource=$(findmnt -n -o SOURCE / | sed 's~\[.*\]~~')
+    local rootpartnum=${rootsource#*p}
+    if [ x${rootpartnum} == x"1" ] || [ x${rootpartnum} == x"2" ];then
+        do_expand_partiton
+    fi
+    do_resize_rootfs
+    do_resize_appfs
+}
+
+case "$1" in
+	start)
+        do_resize
+        exit 0
+    ;;
+   	*)
+		echo "Usage: $0 start"
+		exit 0
+	;;
+esac
+

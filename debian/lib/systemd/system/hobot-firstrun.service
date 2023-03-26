@@ -1,0 +1,16 @@
+# Hobot firstrun service
+# Do some config when first/second boot
+# This service may block the boot process for up to 2 minutes
+
+[Unit]
+Description=Hobot firstrun
+Before=getty.target system-getty.slice
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/etc/init.d/hobot-firstrun start
+TimeoutStartSec=2min
+
+[Install]
+WantedBy=multi-user.target
