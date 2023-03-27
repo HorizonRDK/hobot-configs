@@ -13,7 +13,7 @@ do_first_run()
 {
     if [ -f /etc/.do_first_run ];then
 
-        depmod
+        depmod -a 4.14.87
         ldconfig
 
         ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
