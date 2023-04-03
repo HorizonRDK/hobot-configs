@@ -28,6 +28,10 @@ start()
 		hrut_count 0
 	fi
 
+	if [ -e "/usr/bin/python3.8" ]; then
+		setcap cap_sys_rawio,cap_sys_nice+eip /usr/bin/python3.8
+	fi
+
 	if [ -e "/boot/config/hobot_config.sh" ]; then
 		chmod +x /boot/config/hobot_config.sh
 		/boot/config/hobot_config.sh
