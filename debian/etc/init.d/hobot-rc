@@ -9,11 +9,38 @@
 # Short-Description: Custom self-starter
 ### END INIT INFO
 
+change_grp()
+{
+	local DIR="${0}"
+	local group_name="${1}"
+
+	for file in $(find "$DIR" -depth)
+	do
+		if [ -d "$file" ] || [ -f "$file" ]; then
+			group=$(stat -c %G "$file")
+			if [ "$group" == "root" ] || [ "$group" == "sudo" ]; then
+				chgrp ${group_name} "$file"
+			fi
+		fi
+	done
+}
+
 start()
 {
+	which "hrut_count" >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		hrut_count 0
+	fi
+
 	chmod a=rx,u+ws /usr/bin/sudo
+
 	if [ -d /home/sunrise ]; then
-		chown sunrise:sudo -R /home/sunrise
+		chown sunrise:sunrise -R /home/sunrise
+	fi
+
+	chmod 775 /app
+	if [ -d /app ]; then
+		change_grp /app video
 	fi
 
 	if [ -d /var/cache/man ]; then
@@ -22,11 +49,6 @@ start()
 
 	# for ubuntu desktop
 	[[ -d /etc/lightdm ]] && echo desktop > /sys/devices/virtual/graphics/iar_cdev/iar_test_attr
-
-	which "hrut_count" >/dev/null 2>&1
-	if [ $? -eq 0 ]; then
-		hrut_count 0
-	fi
 
 	if [ -e "/usr/bin/python3.8" ]; then
 		setcap cap_sys_rawio,cap_sys_nice+eip /usr/bin/python3.8
