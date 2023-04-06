@@ -11,8 +11,8 @@
 
 change_grp()
 {
-	local DIR="${0}"
-	local group_name="${1}"
+	local DIR="${1}"
+	local group_name="${2}"
 
 	for file in $(find "$DIR" -depth)
 	do
