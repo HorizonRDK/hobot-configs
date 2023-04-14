@@ -25,6 +25,27 @@ change_grp()
 	done
 }
 
+mount_config()
+{
+	# Determine the mmc device number of the rootfs partition
+	local ROOT_PART="$(findmnt / -o source -n)"
+	local ROOT_DEV="/dev/$(lsblk -no pkname "$ROOT_PART")"
+
+	# Find the config partition
+	local config_dev=$(blkid ${ROOT_DEV}* | grep 'LABEL="CONFIG"' | cut -d: -f1)
+	if [ -z "$config_dev" ]; then
+		echo "Error: could not find config partition with label CONFIG"
+		return 1
+	fi
+
+	# Mount the config partition to /hobot/config
+	local config_mount="/hobot/config"
+	mkdir -p $config_mount
+	mount $config_dev $config_mount
+
+	echo "Mounted config partition $config_dev to $config_mount"
+}
+
 start()
 {
 	which "hrut_count" >/dev/null 2>&1
@@ -58,6 +79,8 @@ start()
 		chmod +x /boot/config/hobot_config.sh
 		/boot/config/hobot_config.sh
 	fi
+
+	mount_config
 }
 
 case "$1" in
