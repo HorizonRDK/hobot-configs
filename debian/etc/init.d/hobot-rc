@@ -38,8 +38,8 @@ mount_config()
 		return 1
 	fi
 
-	# Mount the config partition to /hobot/config
-	local config_mount="/hobot/config"
+	# Mount the config partition to /boot/config
+	local config_mount="/boot/config"
 	mkdir -p $config_mount
 	mount $config_dev $config_mount
 
@@ -75,12 +75,12 @@ start()
 		setcap cap_sys_rawio,cap_sys_nice+eip /usr/bin/python3.8
 	fi
 
+	mount_config
+
 	if [ -e "/boot/config/hobot_config.sh" ]; then
 		chmod +x /boot/config/hobot_config.sh
 		/boot/config/hobot_config.sh
 	fi
-
-	mount_config
 }
 
 case "$1" in
