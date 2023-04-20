@@ -1,0 +1,116 @@
+{
+  "version": "2.0.0",
+  "board_3": {
+    "board_id": "3",
+    "camera_num": 2,
+    "cameras": [
+      {
+        "reset": "119:low",
+        "i2c_bus": 2,
+        "mipi_host": 0
+      },
+      {
+        "reset": "119:low",
+        "i2c_bus": 2,
+        "mipi_host": 1
+      }
+    ],
+
+    "lcd_backlight": "22:low",
+    "lcd_reset": "117:low"
+  },
+  "board_4": {
+    "board_id": "4",
+    "camera_num": 2,
+    "cameras": [
+      {
+        "reset": "119:low",
+        "i2c_bus": 2,
+        "mipi_host": 0
+      },
+      {
+        "reset": "118:low",
+        "i2c_bus": 2,
+        "mipi_host": 1
+      }
+    ],
+
+    "lcd_backlight": "22:low",
+    "lcd_reset": "117:low"
+  },
+  "board_5": {
+    "board_id": "5",
+    "camera_num": 2,
+    "cameras": [
+      {
+        "reset": "19:low",
+        "i2c_bus": 1,
+        "mipi_host": 0
+      },
+      {
+        "reset": "19:low",
+        "i2c_bus": 1,
+        "mipi_host": 2
+      }
+    ],
+
+    "lcd_backlight": "62:low",
+    "lcd_reset": "61:low"
+  },
+  "board_6": {
+    "board_id": "6",
+    "camera_num": 2,
+    "cameras": [
+      {
+        "reset": "19:low",
+        "i2c_bus": 1,
+        "mipi_host": 0
+      },
+      {
+        "reset": "19:low",
+        "i2c_bus": 1,
+        "mipi_host": 2
+      }
+    ],
+
+    "lcd_backlight": "62:low",
+    "lcd_reset": "61:low"
+  },
+  "board_8": {
+    "board_id": "8",
+    "camera_num": 2,
+    "cameras": [
+      {
+        "reset": "19:low",
+        "i2c_bus": 1,
+        "mipi_host": 0
+      },
+      {
+        "reset": "19:low",
+        "i2c_bus": 1,
+        "mipi_host": 2
+      }
+    ]
+  },
+  "board_b": {
+    "board_id": "b",
+    "camera_num": 3,
+    "cameras": [
+      {
+        "reset": "114:low",
+        "i2c_bus": 1,
+        "mipi_host": 1
+      },
+      {
+        "reset": "114:low",
+        "i2c_bus": 3,
+        "mipi_host": 0
+      },
+      {
+        "reset": "114:low",
+        "i2c_bus": 3,
+        "mipi_host": 2
+      }
+    ]
+  }
+}

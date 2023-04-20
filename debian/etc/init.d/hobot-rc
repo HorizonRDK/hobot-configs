@@ -81,6 +81,11 @@ start()
 		chmod +x /boot/config/hobot_config.sh
 		/boot/config/hobot_config.sh
 	fi
+
+	if [ -e "/usr/bin/hobot_reset_camera.py" ]; then
+		chmod +x /usr/bin/hobot_reset_camera.py
+		python3 /usr/bin/hobot_reset_camera.py
+	fi
 }
 
 case "$1" in
