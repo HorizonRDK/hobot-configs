@@ -11,33 +11,32 @@
 
 do_first_run()
 {
-    if [ -f /etc/.do_first_run ];then
+	if [ -f /etc/.do_first_run ];then
 
-        depmod -a 4.14.87
-        ldconfig
+		depmod -a 4.14.87
+		ldconfig
 
-        ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+		ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
-        # Configure hobot ubuntu desktop
-        # Debian Buster desktop bugfix https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=923289
-        [[ -d /etc/lightdm ]] && dpkg-reconfigure libgdk-pixbuf2.0-0 && update-mime-database /usr/share/mime
+		# Configure hobot ubuntu desktop
+		# Debian Buster desktop bugfix https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=923289
+		[[ -d /etc/lightdm ]] && dpkg-reconfigure libgdk-pixbuf2.0-0 && update-mime-database /usr/share/mime
 
-        [[ -d /etc/lightdm ]] && dpkg-reconfigure lightdm && systemctl restart lightdm
+		[[ -d /etc/lightdm ]] && dpkg-reconfigure lightdm && systemctl restart lightdm
 
-        [[ -d /etc/.vnc ]] && systemctl daemon-reload && systemctl enable x11vnc.service
-        #[[ -d /etc/.vnc ]] && systemctl start x11vnc.service
+		[[ -d /etc/.vnc ]] && systemctl daemon-reload && systemctl enable x11vnc.service
 
-        rm -rf /etc/.do_first_run
-    fi
+		rm -rf /etc/.do_first_run
+	fi
 }
 
 case "$1" in
 	start)
-        do_first_run && systemctl disable hobot-firstrun
-        exit 0
-    ;;
-   	*)
+		do_first_run && systemctl disable hobot-firstrun
+		exit 0
+		;;
+	*)
 		echo "Usage: $0 start"
 		exit 0
-	;;
+		;;
 esac
