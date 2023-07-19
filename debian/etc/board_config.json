@@ -98,17 +98,17 @@
     "cameras": [
       {
         "reset": "114:low",
-        "i2c_bus": 1,
-        "mipi_host": 1
-      },
-      {
-        "reset": "114:low",
         "i2c_bus": 3,
         "mipi_host": 0
       },
       {
         "reset": "114:low",
-        "i2c_bus": 3,
+        "i2c_bus": 1,
+        "mipi_host": 1
+      },
+      {
+        "reset": "114:low",
+        "i2c_bus": 0,
         "mipi_host": 2
       }
     ]
