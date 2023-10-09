@@ -9,11 +9,11 @@ systemctl --no-reload enable hobot-resizefs.service
 systemctl --no-reload enable hobot-firstrun.service
 systemctl --no-reload enable hobot-set_led_status
 systemctl --no-reload enable serial-getty@ttyS0.service
+systemctl --no-reload enable hobot-cpu-config.service
 
 if [ ! -f /etc/rc.local ]; then
 	cp /etc/rc.local.default /etc/rc.local
 fi
-
 
 chmod 777 /etc/set_mac_address.sh
 mkdir -p /home/root

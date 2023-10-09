@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo "Start to uninstall hobot config in etc"
-
 update-rc.d usbsel remove
 update-rc.d hobot-rc remove
 
