@@ -1,5 +1,4 @@
 #!/bin/bash
 
-echo "Finish remove all files."
 exit 0
 

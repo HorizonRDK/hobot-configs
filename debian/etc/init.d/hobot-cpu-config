@@ -1,0 +1,68 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:          hobot
+# Required-Start:    $all
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:
+# Short-Description: Configure CPU settings from /boot/config.txt
+### END INIT INFO
+
+start()
+{
+    arm_boost=$(grep -E "^arm_boost=" /boot/config.txt | cut -d'=' -f2)
+    governor=$(grep -E "^governor=" /boot/config.txt | cut -d'=' -f2)
+    frequency=$(grep -E "^frequency=" /boot/config.txt | cut -d'=' -f2)
+
+    if [ -n "$arm_boost" ]; then
+        echo "Enabling CPU overclocking..."
+        echo "$arm_boost" > /sys/devices/system/cpu/cpufreq/boost
+    fi
+
+    if [ -n "$governor" ]; then
+        available_governors=$(cat /sys/devices/system/cpu/cpufreq/policy0/scaling_available_governors)
+        if [[ $available_governors =~ $governor ]]; then
+            echo "Setting CPU governor to $governor..."
+            echo "$governor" > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor
+        else
+            echo "Invalid governor: $governor. Available governors: $available_governors"
+        fi
+
+        if [ "$governor" = "userspace" ]; then
+            if [ -n "$frequency" ]; then
+                available_frequencies=$(cat /sys/devices/system/cpu/cpufreq/policy0/scaling_available_frequencies)
+                available_boost_frequencies=$(cat /sys/devices/system/cpu/cpufreq/policy0/scaling_boost_frequencies)
+
+                if [ -n "$arm_boost" ]; then
+                    if [[ $available_frequencies =~ $frequency || $available_boost_frequencies =~ $frequency ]]; then
+                        echo "Setting CPU frequency to $frequency Hz..."
+                        echo "$frequency" > /sys/devices/system/cpu/cpufreq/policy0/scaling_setspeed
+                    else
+                        echo "Invalid frequency: $frequency. Available frequencies: $available_frequencies $available_boost_frequencies"
+                    fi
+                else
+                    if [[ $available_frequencies =~ $frequency ]]; then
+                        echo "Setting CPU frequency to $frequency Hz..."
+                        echo "$frequency" > /sys/devices/system/cpu/cpufreq/policy0/scaling_setspeed
+                    else
+                        echo "Invalid frequency: $frequency. Available frequencies: $available_frequencies"
+                    fi
+                fi
+            fi
+        fi
+    fi
+
+    echo "CPU configuration complete."
+}
+
+case "$1" in
+    start)
+        start
+        exit 0
+    ;;
+    *)
+        echo "Usage: $0 start"
+        exit 0
+    ;;
+esac
