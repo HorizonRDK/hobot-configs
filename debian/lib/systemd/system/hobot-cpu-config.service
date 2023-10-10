@@ -3,7 +3,7 @@ Description=Configure CPU settings from /boot/config.txt
 After=multi-user.target
 
 [Service]
-ExecStart=/etc/init.d/hobot-cpu-config
+ExecStart=/etc/init.d/hobot-cpu-config start
 TimeoutStartSec=1min
 
 [Install]
