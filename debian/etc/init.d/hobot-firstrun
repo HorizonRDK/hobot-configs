@@ -24,8 +24,6 @@ do_first_run()
 
 		[[ -d /etc/lightdm ]] && dpkg-reconfigure lightdm && systemctl restart lightdm
 
-		[[ -d /etc/.vnc ]] && systemctl daemon-reload && systemctl enable x11vnc.service
-
 		rm -rf /etc/.do_first_run
 	fi
 }

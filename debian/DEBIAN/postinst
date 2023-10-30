@@ -32,6 +32,5 @@ if [ -d /etc/lightdm ]; then
 	chown sunrise /home/sunrise/Desktop/*.desktop
 fi
 
-[[ -d /etc/.vnc ]] && systemctl daemon-reload && systemctl --no-reload enable x11vnc.service
-
 exit 0
+
