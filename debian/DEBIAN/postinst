@@ -21,12 +21,16 @@ mkdir -p /home/root
 cp -arf /etc/skel/.config/. /home/root/.config
 cp -arf /etc/skel/.config/. /home/sunrise/.config
 
+if [ -d /etc/lightdm ]; then
+	# Configure ubuntu desktop
+	# Debian Buster desktop bugfix https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=923289
+	dpkg-reconfigure libgdk-pixbuf2.0-0 && update-mime-database /usr/share/mime
 
-# Configure hobot ubuntu desktop
-# Debian Buster desktop bugfix https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=923289
-[[ -d /etc/lightdm ]] && dpkg-reconfigure libgdk-pixbuf2.0-0 && update-mime-database /usr/share/mime
+	dpkg-reconfigure lightdm && systemctl restart lightdm
 
-[[ -d /etc/lightdm ]] && dpkg-reconfigure lightdm && systemctl restart lightdm
+	cp -arf /etc/skel/Desktop/* /home/sunrise/Desktop
+	chown sunrise /home/sunrise/Desktop/*.desktop
+fi
 
 [[ -d /etc/.vnc ]] && systemctl daemon-reload && systemctl --no-reload enable x11vnc.service
 
