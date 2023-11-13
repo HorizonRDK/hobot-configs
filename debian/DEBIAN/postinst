@@ -10,16 +10,28 @@ systemctl --no-reload enable hobot-firstrun.service
 systemctl --no-reload enable hobot-set_led_status
 systemctl --no-reload enable serial-getty@ttyS0.service
 systemctl --no-reload enable hobot-cpu-config.service
+systemctl --no-reload enable hobot-automount.service
 
 if [ ! -f /etc/rc.local ]; then
 	cp /etc/rc.local.default /etc/rc.local
 fi
 
+if [ ! -f /etc/.vnc/passwd ]; then
+	cp /etc/.vnc/passwd.default /etc/.vnc/passwd
+fi
+
+if [ ! -f /etc/lightdm/lightdm.conf.d/22-hobot-autologin.conf ]; then
+	cp /etc/lightdm/lightdm.conf.d/22-hobot-autologin.conf.default /etc/lightdm/lightdm.conf.d/22-hobot-autologin.conf
+fi
+
 chmod 777 /etc/set_mac_address.sh
 mkdir -p /home/root
 
-cp -arf /etc/skel/.config/. /home/root/.config
-cp -arf /etc/skel/.config/. /home/sunrise/.config
+cp -arf /etc/skel/.config /home/root
+cp -arf /etc/skel/.config /home/sunrise
+
+cp -arf /etc/skel/.local /home/root
+cp -arf /etc/skel/.local /home/sunrise
 
 if [ -d /etc/lightdm ]; then
 	# Configure ubuntu desktop
@@ -28,6 +40,7 @@ if [ -d /etc/lightdm ]; then
 
 	dpkg-reconfigure lightdm && systemctl restart lightdm
 
+	mkdir -p /home/sunrise/Desktop
 	cp -arf /etc/skel/Desktop/* /home/sunrise/Desktop
 	chown sunrise /home/sunrise/Desktop/*.desktop
 fi
