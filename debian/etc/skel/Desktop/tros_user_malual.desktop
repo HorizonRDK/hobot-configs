@@ -2,6 +2,7 @@
 Version=1.0
 Type=Link
 Name=TROS Manual
+Name[zh_CN]=TROS手册
 Comment=TogetheROS.Bot User Manual
 Icon=/usr/share/backgrounds/xfce/rdk_logo.png
 URL=https://developer.horizon.cc/documents_tros/

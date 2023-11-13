@@ -1,0 +1,16 @@
+# Do some config when first/second boot
+# This service may block the boot process for up to 2 minutes
+
+[Unit]
+Description=Hobot auto mount usb storage
+After=udisks2.service systemd-remount-fs.service
+
+[Service]
+Type=simple
+RemainAfterExit=yes
+ExecStart=/usr/bin/hobot-automount.sh
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target
