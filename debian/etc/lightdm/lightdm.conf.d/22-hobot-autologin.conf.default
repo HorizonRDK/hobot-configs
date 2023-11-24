@@ -1,4 +1,4 @@
 [Seat:*]
-#autologin-user=
+autologin-user=sunrise
 autologin-user-timeout=0
 user-session=xfce
