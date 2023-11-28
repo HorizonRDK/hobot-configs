@@ -1,0 +1,127 @@
+#!/bin/bash
+
+get_hardware_info() {
+    hardware_info=$(tr -d "\n\r\0" < /proc/device-tree/model)" (Board Id = "$(tr -d "\n\r\0" < /sys/class/socinfo/som_name)")"
+    echo "[Hardware Model]:"
+    echo -e "\t${hardware_info}\n"
+
+    cpu_bpu_status=$(bash hrut_somstatus | tr -d "\0" | sed 's/^/\t/')
+    echo "[CPU And BPU Status]:"
+    echo -e "${cpu_bpu_status}\n"
+
+    memory_info=$(free -h)
+    total_memory=$(echo "$memory_info" | awk 'NR==2 {print $2}')
+    used_memory=$(echo "$memory_info" | awk 'NR==2 {print $3}')
+    free_memory=$(echo "$memory_info" | awk 'NR==2 {print $4}')
+
+    echo -e "[Total Memory]:\t\t${total_memory}"
+    echo -e "[Used Memory]:\t\t${used_memory}"
+    echo -e "[Free Memory]:\t\t${free_memory}"
+
+    if [ -e /proc/device-tree/reserved-memory/ion_cma/size ] ; then
+        ion_cma_size_hex=$(xxd -s 4 -l 4 -p /proc/device-tree/reserved-memory/ion_cma/size | tr -d " \t\n\r")
+        ion_cma_size_dec=$((16#${ion_cma_size_hex}))
+        ion_cma_size_mb=$((ion_cma_size_dec / (1024 * 1024)))
+        echo -e "[ION Memory Size]:\t${ion_cma_size_mb}MB"
+    fi
+    echo -e "\n"
+}
+
+get_rdk_os_info() {
+    rdk_os_info=$(tr -d "\n\r\0" < /etc/version)
+    echo "[RDK OS Version]:"
+    echo -e "\t${rdk_os_info}\n"
+
+    kernel_info=$(uname -a | tr -d "\0")
+    echo "[RDK Kernel Version]:"
+    echo -e "\t${kernel_info}\n"
+
+    miniboot_info=$(strings /dev/mtd0 | grep -E "U-Boot 2018.09.*\(" | head -n 1)
+    echo "[RDK Miniboot Version]:"
+    echo -e "\t${miniboot_info}\n"
+
+    rdk_pkg_info=$(apt list 2>/dev/null | grep ^hobot | tr -d "\0" | sed 's/^/\t/')
+    echo "[RDK Packages List]:"
+    echo -e "${rdk_pkg_info}\n"
+
+    tros_info=$(apt list 2>/dev/null | grep ^tros | tr -d "\0" | sed 's/^/\t/')
+    echo "[RDK Packages List]:"
+    echo -e "${tros_info}\n"
+
+    kern_module_list=$(lsmod | tr -d "\0" | sed 's/^/\t/')
+    echo "[RDK Kernel Module List]:"
+    echo -e "${kern_module_list}\n"
+}
+
+get_logs()
+{
+    show_lines=$1
+    kern_log=$(cat /var/log/kern.log | tail -n ${show_lines} | tr -d "\0" | sed 's/^/\t/')
+    echo "[Kernel Log]:"
+    echo -e "${kern_log}\n"
+
+    sys_log=$(cat /var/log/syslog | tail -n ${show_lines} | tr -d "\0" | sed 's/^/\t/')
+    echo "[System Log]:"
+    echo -e "${sys_log}\n"
+
+    journal_log=$(journalctl -r -n ${show_lines} | tr -d "\0" | sed 's/^/\t/')
+    echo "[Journal Log]:"
+    echo -e "${journal_log}\n"
+}
+
+show_help() {
+    echo -e "Usage: $0 [ -b | -s | -d | -v | -h]"
+    echo -e "\nOptions:"
+    echo -e "  -b  Base output mode, No log output"
+    echo -e "  -s  Simple output mode (default), The log only outputs the latest 30 lines"
+    echo -e "  -d  Detailed output mode, The log only outputs the latest 300 lines"
+    echo -e "  -h  Show this help message"
+    exit 0
+}
+
+main() {
+    output_mode="simple"
+
+    while getopts "bsdhv" option; do
+        case $option in
+            b)
+                output_mode="base"
+                ;;
+            s)
+                output_mode="simple"
+                ;;
+            d)
+                output_mode="detailed"
+                ;;
+            h)
+                show_help
+                ;;
+            v)
+                echo "RDK System Information Collection Script Version 1.0"
+                exit 0
+                ;;
+            \?)
+                echo "Invalid option: -$OPTARG" >&2
+                exit 1
+                ;;
+        esac
+    done
+
+    shift $((OPTIND-1))
+
+    echo -e "================ RDK System Information Collection ================\n"
+    get_hardware_info
+    get_rdk_os_info
+    case $output_mode in
+        base)
+            ;;
+        simple)
+            get_logs 30
+            ;;
+        detailed)
+            get_logs 300
+            ;;
+    esac
+}
+
+main "$@"
