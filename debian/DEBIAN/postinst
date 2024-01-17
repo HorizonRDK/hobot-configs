@@ -24,8 +24,9 @@ if [ ! -f /etc/lightdm/lightdm.conf.d/22-hobot-autologin.conf ]; then
 	cp /etc/lightdm/lightdm.conf.d/22-hobot-autologin.conf.default /etc/lightdm/lightdm.conf.d/22-hobot-autologin.conf
 fi
 
-if [ ! -f /etc/network/interfaces ]; then
-	cp /etc/network/interfaces.default /etc/network/interfaces
+if [ ! -f /etc/network/interfaces.d/hobot-eth0 ]; then
+	mkdir -p /etc/network/interfaces.d
+	cp /etc/network/hobot-eth0.default /etc/network/interfaces.d/hobot-eth0
 fi
 
 chmod 777 /etc/set_mac_address.sh
