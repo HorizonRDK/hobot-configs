@@ -24,9 +24,12 @@ if [ ! -f /etc/lightdm/lightdm.conf.d/22-hobot-autologin.conf ]; then
 	cp /etc/lightdm/lightdm.conf.d/22-hobot-autologin.conf.default /etc/lightdm/lightdm.conf.d/22-hobot-autologin.conf
 fi
 
-if [ ! -f /etc/network/interfaces.d/hobot-eth0 ]; then
-	mkdir -p /etc/network/interfaces.d
-	cp /etc/network/hobot-eth0.default /etc/network/interfaces.d/hobot-eth0
+if [ -e /etc/network/interfaces ]; then
+	if ! grep -q "iface eth0" /etc/network/interfaces; then
+		cp /etc/network/hobot-eth0.default /etc/network/interfaces
+	fi
+else
+	cp /etc/network/hobot-eth0.default /etc/network/interfaces
 fi
 
 chmod 777 /etc/set_mac_address.sh
