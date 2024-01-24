@@ -71,8 +71,10 @@ start()
 	# for ubuntu desktop
 	[[ -d /etc/lightdm ]] && echo desktop > /sys/devices/virtual/graphics/iar_cdev/iar_test_attr
 
-	if [ -e "/usr/bin/python3.8" ]; then
-		setcap cap_sys_rawio,cap_sys_nice+eip /usr/bin/python3.8
+	python_path="/usr/bin/python3.8"
+	desired_caps="cap_sys_rawio,cap_sys_nice+eip"
+	if getcap "$python_path" | grep -q "$desired_caps"; then
+		setcap -r "$python_path"
 	fi
 
 	mount_config
