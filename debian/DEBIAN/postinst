@@ -35,6 +35,12 @@ fi
 chmod 777 /etc/set_mac_address.sh
 mkdir -p /home/root
 
+ununtu_version=$(cat /etc/issue.net | awk -F" " '{print $2}' | awk -F"." '{print $1}')
+if [ "$ununtu_version" -ge "22" ]; then
+sed 's/exo/xfce4/g' /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml > /tmp/xfce4-panel.xml
+mv /tmp/xfce4-panel.xml /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml
+fi
+
 cp -arf /etc/skel/.config /home/root
 cp -arf /etc/skel/.config /home/sunrise
 
