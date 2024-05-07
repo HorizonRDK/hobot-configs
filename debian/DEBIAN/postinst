@@ -39,6 +39,17 @@ ununtu_version=$(cat /etc/issue.net | awk -F" " '{print $2}' | awk -F"." '{print
 if [ "$ununtu_version" -ge "22" ]; then
 sed 's/exo/xfce4/g' /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml > /tmp/xfce4-panel.xml
 mv /tmp/xfce4-panel.xml /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml
+
+cat>>etc/bash.bashrc<<EOF
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
+EOF
+
 fi
 
 cp -arf /etc/skel/.config /home/root
