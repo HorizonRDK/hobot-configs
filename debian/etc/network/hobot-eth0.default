@@ -4,7 +4,7 @@ source-directory /etc/network/interfaces.d
 auto eth0
 iface eth0 inet static
         pre-up /etc/set_mac_address.sh
-        address 192.168.1.10
+        address 192.168.127.10
         netmask 255.255.255.0
-        gateway 192.168.1.1
+        gateway 192.168.127.1
         metric 700
